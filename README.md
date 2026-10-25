@@ -15,8 +15,8 @@
 
 | 文件 | 说明 |
 | --- | --- |
-| `实验报告_纸间书店_Vue3_GitHub版.docx` | 按模板补全的实验报告（40 页，含截图、代码、测试与 GitHub Pages 部署） |
-| `实验报告_纸间书店_Vue3_GitHub版.pdf` | 报告 PDF 预览版 |
+| `实验报告_纸间书店_Vue3_简洁版.docx` | 按新模板整理的 9 页简洁版报告，只保留网站链接和截图 |
+| `实验报告_纸间书店_Vue3_简洁版.pdf` | 简洁版报告 PDF 预览 |
 | `shots/` | 桌面端 / 移动端运行截图 |
 | `dist/` | 可直接静态托管的构建产物（运行 `pnpm build` 生成） |
 | `docs/github-actions-deploy.yml` | 可选的 GitHub Actions 部署方案 |
