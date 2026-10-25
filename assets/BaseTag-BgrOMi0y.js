@@ -1,0 +1,1 @@
+import{b as t,x as s,w as n,I as o,n as l,a3 as r}from"./index-BOC-QAm5.js";const u={__name:"BaseTag",props:{tone:{type:String,default:"default"},as:{type:String,default:"span"}},setup(a){return(e,c)=>(t(),s(r(a.as),{class:l(["tag",`tag--${a.tone}`])},{default:n(()=>[o(e.$slots,"default")]),_:3},8,["class"]))}};export{u as _};
