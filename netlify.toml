@@ -1,0 +1,12 @@
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Hash 路由，无需 SPA fallback；保留一个兜底重写以便将来切换 History 模式。
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
