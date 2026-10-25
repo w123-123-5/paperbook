@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path('.tools/pypdf').resolve()))
 from pypdf import PdfReader
 
 ROOT = Path(__file__).resolve().parent.parent
-PDF = ROOT / '实验报告_纸间书店_Vue3.pdf'
+PDF = ROOT / '实验报告_纸间书店_Vue3_GitHub版.pdf'
 OUT = ROOT / 'report_page_map.json'
 INDEX = ROOT / 'report_page_index.json'
 

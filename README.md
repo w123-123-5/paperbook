@@ -6,19 +6,20 @@
 
 ## 在线预览
 
-- **BrewPage 公网地址**：<https://paperbook-2026-1025-8ntwatz1vs.brewpage.app/>
-- 该地址为 30 天临时预览（至 2026-11-24），适合课程提交与演示。
+- **GitHub Pages（长期）**：<https://w123-123-5.github.io/paperbook/>
+- **GitHub 仓库**：<https://github.com/w123-123-5/paperbook>
+- **BrewPage 临时镜像**：<https://paperbook-2026-1025-8ntwatz1vs.brewpage.app/>（至 2026-11-24）
 - 路由使用 Hash 模式，刷新任意页面都不会 404。
 
 ## 交付物
 
 | 文件 | 说明 |
 | --- | --- |
-| `实验报告_纸间书店_Vue3.docx` | 按模板补全的实验报告（40 页，含截图、代码与测试） |
-| `实验报告_纸间书店_Vue3.pdf` | 报告 PDF 预览版 |
+| `实验报告_纸间书店_Vue3_GitHub版.docx` | 按模板补全的实验报告（40 页，含截图、代码、测试与 GitHub Pages 部署） |
+| `实验报告_纸间书店_Vue3_GitHub版.pdf` | 报告 PDF 预览版 |
 | `shots/` | 桌面端 / 移动端运行截图 |
 | `dist/` | 可直接静态托管的构建产物（运行 `pnpm build` 生成） |
-| `.github/workflows/deploy.yml` | GitHub Pages 自动部署工作流 |
+| `docs/github-actions-deploy.yml` | 可选的 GitHub Actions 部署方案 |
 
 ## 页面
 
@@ -68,7 +69,7 @@ paperbook/
 │  └─ main.js
 ├─ scripts/                     # 浏览器验收与截图脚本
 ├─ shots/                       # 桌面端 / 移动端运行截图
-├─ .github/workflows/deploy.yml # GitHub Pages 自动部署
+├─ docs/github-actions-deploy.yml # 可选 GitHub Actions 部署
 ├─ index.html
 └─ vite.config.js
 ```
@@ -130,28 +131,28 @@ node scripts/capture.mjs   # 重新生成 shots/ 截图
 
 ## 部署
 
-### 当前公网预览
+### 当前公网地址
 
-已构建并上传到 BrewPage（免登录静态托管），见上方在线预览地址。构建产物使用 `base: './'` 与 Hash 路由，可直接放在任意静态目录。
+- GitHub Pages：<https://w123-123-5.github.io/paperbook/>（长期）
+- BrewPage 镜像：<https://paperbook-2026-1025-8ntwatz1vs.brewpage.app/>（30 天临时）
 
-### GitHub Pages
+GitHub Pages 采用 `gh-pages` 分支托管 `dist/` 构建产物，`main` 分支保留源码、脚本和报告。构建产物使用 `base: './'` 与 Hash 路由，可直接放在任意静态目录。
 
-仓库已包含 `.github/workflows/deploy.yml`。推送到 `main` 后：
-
-1. 打开仓库 **Settings → Pages → Build and deployment → Source**，选择 **GitHub Actions**；
-2. 等待 `Deploy to GitHub Pages` 工作流完成；
-3. 访问 `https://<username>.github.io/<repo>/`。
-
-由于使用 Hash 路由，GitHub Pages 不需要额外的 404 fallback。
+### 更新 GitHub Pages
 
 ```bash
-git init
+pnpm build
+git switch --orphan gh-pages
+git rm -rf .
+cp -r dist/* .
+printf '' > .nojekyll
 git add .
-git commit -m "feat: paperbook vue practice site"
-git branch -M main
-git remote add origin https://github.com/<username>/<repo>.git
-git push -u origin main
+git commit -m "deploy: publish paperbook site"
+git push origin gh-pages
+git switch main
 ```
+
+仓库中的 `docs/github-actions-deploy.yml` 是一份可选的 GitHub Actions 工作流，供有 `workflow` 权限的环境改用自动部署。
 
 ## 说明
 

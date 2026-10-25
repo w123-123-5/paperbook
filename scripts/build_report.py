@@ -15,7 +15,7 @@ from docx.shared import Cm, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE = Path(r'C:\Users\33721\Downloads\实验报告模板 - 副本.docx')
-OUTPUT = ROOT / '实验报告_纸间书店_Vue3.docx'
+OUTPUT = ROOT / '实验报告_纸间书店_Vue3_GitHub版.docx'
 ASSETS = ROOT / 'report_assets'
 PAGE_MAP_FILE = ROOT / 'report_page_map.json'
 
@@ -1229,66 +1229,56 @@ export default defineConfig({
 )
 
 doc.add_page_break()
-add_heading2('8.2 公网部署结果')
+add_heading2('8.2 公网部署与访问')
 add_body(
-    '由于当前运行环境的 `github.com` 被本机 hosts 指向 `127.0.0.1`，无法直接连接 GitHub 完成推送与 Pages 发布。为了先拿到可访问的公网地址，本次使用 BrewPage 的免登录静态站点托管：将 `dist/` 打包为 zip，通过 `POST /api/sites` 上传，返回独立子域名。'
+    '最终提供两个入口：GitHub Pages 作为长期主地址，BrewPage 作为 30 天临时镜像。GitHub Pages 使用 `gh-pages` 分支托管 `dist/` 构建产物，`main` 分支保留源码、报告和脚本；BrewPage 则通过静态站点 API 上传 zip 包。两者都使用相对路径资源和 Hash 路由。'
 )
 add_table(
     ['项目', '内容'],
     [
-        ['托管方式', 'BrewPage 静态站点（多文件 zip）'],
-        ['公网地址', 'https://paperbook-2026-1025-8ntwatz1vs.brewpage.app/'],
-        ['有效期', '2026-11-24（30 天）'],
+        ['主地址', 'https://w123-123-5.github.io/paperbook/'],
+        ['GitHub 仓库', 'https://github.com/w123-123-5/paperbook'],
+        ['临时镜像', 'https://paperbook-2026-1025-8ntwatz1vs.brewpage.app/（至 2026-11-24）'],
+        ['发布方式', 'gh-pages 分支 + BrewPage 静态 zip'],
         ['路由方式', 'Hash 路由，刷新任意页面可用'],
         ['部署产物', 'dist/（相对路径资源）'],
     ],
-    [3.2, 10.8],
+    [3.0, 11.0],
     caption='表 8-1  公网部署信息',
 )
 p = doc.add_paragraph(style='BodyCN')
 p.paragraph_format.first_line_indent = Pt(0)
-r = p.add_run('公网地址：')
+r = p.add_run('GitHub Pages：')
 set_run_font(r, bold=True, color=INK)
-add_hyperlink(p, 'https://paperbook-2026-1025-8ntwatz1vs.brewpage.app/', 'https://paperbook-2026-1025-8ntwatz1vs.brewpage.app/')
-r = p.add_run('（建议在电脑与手机各打开一次，检查响应式与路由。）')
+add_hyperlink(p, 'https://w123-123-5.github.io/paperbook/', 'https://w123-123-5.github.io/paperbook/')
+r = p.add_run('；BrewPage 镜像：')
 set_run_font(r, color=GRAY, size=9)
+add_hyperlink(p, 'https://paperbook-2026-1025-8ntwatz1vs.brewpage.app/', 'https://paperbook-2026-1025-8ntwatz1vs.brewpage.app/')
 add_body(
-    '部署后使用无头浏览器再次访问公网地址，首页标题、精选卡片、书架 12 本书、详情页“我与地坛”均正常渲染，控制台无错误。BrewPage 会在页面底部注入一个轻量徽标，这是托管平台的标识，不影响站点功能。'
+    '两个地址均使用无头浏览器再次访问：首页标题、精选卡片、书架 12 本书、详情页“我与地坛”、关于页均正常渲染，控制台无错误。GitHub Pages 走 HTTPS 并启用强制 HTTPS；BrewPage 会在页面底部注入一个轻量徽标，这是托管平台的标识，不影响站点功能。'
 )
 
-add_heading2('8.3 GitHub Pages 准备')
+add_heading2('8.3 GitHub Pages 发布流程')
 add_body(
-    '项目已经包含 `.github/workflows/deploy.yml`：推送到 `main` 后，工作流会安装 pnpm、构建、上传 `dist/` 并调用 `actions/deploy-pages`。在可正常访问 GitHub 的环境中，只需在仓库 Settings → Pages 中选择 GitHub Actions 作为 Source，等待工作流完成即可。由于使用 Hash 路由，无需配置 404 回退。'
+    'GitHub 的 OAuth token 缺少 `workflow` 权限，直接推送包含 GitHub Actions 工作流的 `main` 分支会被拒绝。因此这里采用更直接的 `gh-pages` 分支方案：`main` 只保存源码与报告，`gh-pages` 只保存 `dist/` 构建产物，然后在仓库 Settings → Pages 中选择 `gh-pages` 根目录。仓库中的 `docs/github-actions-deploy.yml` 留作后续有 `workflow` 权限时切换自动部署。'
 )
 add_code(
-    """name: Deploy to GitHub Pages
-on:
-  push:
-    branches: [main]
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with: { version: 11.28.5 }
-      - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: pnpm }
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: dist }
-  deploy:
-    needs: build
-    environment: github-pages
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/deploy-pages@v4""",
-    caption='代码 8-2  GitHub Pages 自动部署工作流（节选）',
+    """pnpm build
+
+# 在临时目录中准备纯构建产物
+git switch --orphan gh-pages
+git rm -rf .
+cp -r dist/* .
+touch .nojekyll
+git add .
+git commit -m "deploy: publish paperbook site"
+git push origin gh-pages
+git switch main
+
+# 在 GitHub 仓库 Settings → Pages
+# Source: Deploy from a branch
+# Branch: gh-pages / (root)""",
+    caption='代码 8-2  通过 gh-pages 分支发布 GitHub Pages',
 )
 
 # ---------------------------------------------------------------------------
@@ -1336,7 +1326,7 @@ add_bullets([
     '搜索只做简单包含匹配：可以加入拼音首字母、分词与高亮，提升中文检索体验。',
     '无障碍还可以更细：抽屉与移动菜单目前只处理 Esc 与焦点初始位置，完整的焦点陷阱与返回焦点仍可加强。',
     '动画没有做性能分级：低端设备可以进一步减少 blur、fixed 背景与大面积过渡。',
-    '部署地址是 30 天临时托管：长期展示应迁移到 GitHub Pages、Netlify 或自有域名，并配置监控与缓存。',
+    'BrewPage 是 30 天临时镜像，GitHub Pages 是长期主地址；后续可以绑定自定义域名，并为 Pages 配置监控与缓存。',
 ])
 
 add_heading2('10.3 心得')

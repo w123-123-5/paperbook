@@ -5,6 +5,11 @@
   "type": "module",
   "packageManager": "pnpm@11.28.5",
   "description": "纸间书店 —— 一个用 Vue 3 构建的独立书店练习网站",
+  "homepage": "https://w123-123-5.github.io/paperbook/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/w123-123-5/paperbook.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
